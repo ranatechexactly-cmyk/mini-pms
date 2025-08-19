@@ -1,66 +1,263 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Mini PMS API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A mini Project Management System API built with Laravel 11 and Laravel Sanctum for authentication.
 
-## About Laravel
+## Features Implemented
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **User Authentication System**
+  - User registration with role assignment
+  - Secure login/logout with Laravel Sanctum tokens
+  - User profile retrieval
+  - Single session token management (previous tokens revoked on login)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **API Architecture**
+  - RESTful API design with versioning (v1)
+  - Service layer pattern for business logic separation
+  - Consistent JSON response format across all endpoints
+  - Custom exception handling for API errors
+  - Request validation using Form Request classes
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Security Features**
+  - Laravel Sanctum token-based authentication
+  - Password hashing with Laravel's Hash facade
+  - Input validation and sanitization
+  - CORS support for cross-origin requests
+  - Rate limiting protection
 
-## Learning Laravel
+- **Documentation & Development**
+  - Swagger/OpenAPI 3.0 documentation
+  - Interactive API documentation UI
+  - Comprehensive README with setup instructions
+  - Clean code structure following Laravel best practices
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Tech Stack
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Framework**: Laravel 11
+- **Authentication**: Laravel Sanctum
+- **Database**: MySQL/SQLite
+- **API Documentation**: L5-Swagger (Swagger/OpenAPI 3.0)
+- **Architecture**: Service Layer Pattern
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Project Setup Instructions
 
-## Laravel Sponsors
+### Prerequisites
+- PHP 8.1 or higher
+- Composer
+- MySQL/SQLite database
+- Git
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Installation Steps
 
-### Premium Partners
+1. **Clone the repository**
+```bash
+git clone <repository-url>
+cd mini-pms-app
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+2. **Install PHP dependencies**
+```bash
+composer install
+```
 
-## Contributing
+3. **Environment configuration**
+```bash
+# Copy environment file
+cp .env.example .env
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Generate application key
+php artisan key:generate
+```
 
-## Code of Conduct
+4. **Database configuration**
+Edit `.env` file with your database credentials:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=mini_pms
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+5. **Run database migrations**
+```bash
+php artisan migrate
+```
 
-## Security Vulnerabilities
+6. **Generate Swagger documentation**
+```bash
+php artisan l5-swagger:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+7. **Start the development server**
+```bash
+php artisan serve
+```
+
+The API will be available at `http://127.0.0.1:8000`
+
+### Verification
+- API Base URL: `http://127.0.0.1:8000/api/v1`
+- Swagger Documentation: `http://127.0.0.1:8000/api/documentation`
+
+## API Documentation
+
+### Swagger UI
+Access the interactive API documentation at:
+```
+http://127.0.0.1:8000/api/documentation
+```
+
+### Base URL
+```
+http://127.0.0.1:8000/api/v1
+```
+
+### Authentication
+All protected endpoints require a Bearer token in the Authorization header:
+```
+Authorization: Bearer {your-token}
+```
+
+## API Endpoints
+
+For complete API endpoint documentation with request/response examples, interactive testing, and detailed specifications, visit our Swagger documentation:
+
+**📋 [Interactive API Documentation](http://127.0.0.1:8000/api/documentation)**
+
+The Swagger UI provides:
+- Complete endpoint documentation
+- Request/response schemas
+- Interactive API testing
+- Authentication examples
+- Real-time API exploration
+
+### Quick Reference
+- **Base URL**: `http://127.0.0.1:8000/api/v1`
+- **Authentication**: Bearer Token (Laravel Sanctum)
+- **Available Endpoints**:
+  - `POST /register` - User registration
+  - `POST /login` - User authentication
+  - `GET /me` - Get current user profile (Protected)
+  - `POST /logout` - User logout (Protected)
+
+## Response Format
+
+All API responses follow a consistent format:
+
+**Success Response:**
+```json
+{
+  "status": "success",
+  "message": "Operation successful",
+  "data": { /* response data */ }
+}
+```
+
+**Error Response:**
+```json
+{
+  "status": "error",
+  "message": "Error description",
+  "data": { /* error details or null */ }
+}
+```
+
+## User Roles
+
+Available user roles:
+- `Developer` (default)
+- `Admin`
+- `Manager`
+- `User`
+
+## Security Features
+
+- **Password Hashing**: Secure password storage using Laravel's Hash facade
+- **Token Management**: Single session tokens (previous tokens revoked on new login)
+- **Request Validation**: Comprehensive input validation using Form Requests
+- **CORS Support**: Configurable cross-origin resource sharing
+- **Rate Limiting**: Built-in API rate limiting
+
+## API Versioning
+
+This application supports API versioning with a clean, scalable structure.
+
+### Current Version (v1)
+All endpoints are currently under version 1:
+- **Base URL**: `/api/v1/`
+- All authentication endpoints use the v1 prefix
+
+### Directory Structure
+```
+app/Http/Controllers/Api/
+└── V1/
+    ├── BaseController.php
+    └── AuthController.php
+```
+
+### Adding New Versions
+When adding future API versions:
+
+1. Create new version directory: `app/Http/Controllers/Api/V2/`
+2. Create `BaseController.php` extending main Controller
+3. Add version-specific routes in `routes/api.php`
+4. Update default routes to point to latest version
+
+## Architecture
+
+### Service Layer Pattern
+- **Controllers**: Handle HTTP requests/responses only
+- **Services**: Contain all business logic
+- **Models**: Data access layer
+- **Requests**: Input validation
+
+### Key Services
+- `AuthService`: Authentication business logic
+- `UserService`: User management operations
+
+## Testing
+
+Run the test suite:
+```bash
+php artisan test
+```
+
+## Development
+
+### Generate Swagger Documentation
+```bash
+php artisan l5-swagger:generate
+```
+
+### Clear Cache
+```bash
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+```
+
+### Testing Endpoints
+
+```bash
+# Register a new user
+curl -X POST http://127.0.0.1:8000/api/v1/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"John Doe","email":"john@example.com","password":"password123","role":"Developer"}'
+
+# Login user
+curl -X POST http://127.0.0.1:8000/api/v1/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"john@example.com","password":"password123"}'
+
+# Get user profile (Auth required)
+curl -H "Authorization: Bearer {your-token}" http://127.0.0.1:8000/api/v1/me
+
+# Logout user (Auth required)
+curl -X POST http://127.0.0.1:8000/api/v1/logout \
+  -H "Authorization: Bearer {your-token}"
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
