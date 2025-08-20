@@ -12,6 +12,7 @@ A mini Project Management System API built with Laravel 11 and Laravel Sanctum f
 
 - **API Architecture**
   - RESTful API design with versioning (v1)
+  - Modular route organization with versioned API routes
   - Service layer pattern for business logic separation
   - Consistent JSON response format across all endpoints
   - Custom exception handling for API errors
@@ -129,17 +130,6 @@ The Swagger UI provides:
 - Complete endpoint documentation
 - Request/response schemas
 - Interactive API testing
-- Authentication examples
-- Real-time API exploration
-
-### Quick Reference
-- **Base URL**: `http://127.0.0.1:8000/api/v1`
-- **Authentication**: Bearer Token (Laravel Sanctum)
-- **Available Endpoints**:
-  - `POST /register` - User registration
-  - `POST /login` - User authentication
-  - `GET /me` - Get current user profile (Protected)
-  - `POST /logout` - User logout (Protected)
 
 ## Response Format
 
