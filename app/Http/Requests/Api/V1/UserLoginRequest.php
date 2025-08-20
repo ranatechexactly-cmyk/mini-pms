@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Api\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -28,7 +28,7 @@ class UserLoginRequest extends FormRequest
     }
 
     /**
-     * Get custom error messages for validator errors.
+     * Get the error messages for the defined validation rules.
      *
      * @return array<string, string>
      */
@@ -36,22 +36,9 @@ class UserLoginRequest extends FormRequest
     {
         return [
             'email.required' => 'The email field is required.',
-            'email.email' => 'Please provide a valid email address.',
+            'email.email' => 'Please enter a valid email address.',
             'password.required' => 'The password field is required.',
-            'password.min' => 'The password must be at least 6 characters.'
-        ];
-    }
-
-    /**
-     * Get custom attributes for validator errors.
-     *
-     * @return array<string, string>
-     */
-    public function attributes(): array
-    {
-        return [
-            'email' => 'email address',
-            'password' => 'password'
+            'password.min' => 'The password must be at least :min characters.'
         ];
     }
 }

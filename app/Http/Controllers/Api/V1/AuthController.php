@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Services\UserService;
 use App\Services\AuthService;
-use App\Http\Requests\UserRegistrationRequest;
-use App\Http\Requests\UserLoginRequest;
+use App\Http\Requests\Api\V1\UserRegistrationRequest;
+use App\Http\Requests\Api\V1\UserLoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends BaseController
 {

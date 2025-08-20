@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Routing\Controller as BaseController;
+
 /**
  * @OA\Info(
  *     title="Mini PMS API",
@@ -22,7 +26,7 @@ namespace App\Http\Controllers;
  *     bearerFormat="JWT"
  * )
  */
-abstract class Controller
+class Controller extends BaseController
 {
-    //
+    use AuthorizesRequests, ValidatesRequests;
 }

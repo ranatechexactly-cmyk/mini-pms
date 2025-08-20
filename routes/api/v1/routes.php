@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\V1\AuthController;
+use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\ProjectController;
+use App\Http\Controllers\Api\V1\TaskController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,8 +27,26 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         // Auth routes
         Route::controller(AuthController::class)->group(function () {
-            Route::get('/me', 'me')->name('me');
             Route::post('/logout', 'logout')->name('logout');
+            Route::get('/me', 'me')->name('me');
         });
+
+        // Project routes
+        Route::apiResource('projects', ProjectController::class);
+        
+        // Project developer management routes
+        Route::prefix('projects/{project}')->group(function () {
+            Route::post('/developers', [ProjectController::class, 'assignDevelopers'])->name('projects.developers.assign');
+            Route::delete('/developers/{developerId}', [ProjectController::class, 'removeDeveloper'])->name('projects.developers.remove');
+        });
+
+        // Task routes
+        Route::apiResource('tasks', TaskController::class);
+        
+        // Project tasks routes
+        Route::get('projects/{project}/tasks', [TaskController::class, 'projectTasks'])->name('projects.tasks.index');
+        
+        // Task status update route
+        Route::patch('tasks/{task}/status', [TaskController::class, 'updateStatus'])->name('tasks.status.update');
     });
 });

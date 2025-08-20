@@ -25,6 +25,8 @@ class User extends Authenticatable
         'role',
     ];
 
+    protected $with = ['managedProjects', 'projects'];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -46,5 +48,40 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function managedProjects()
+    {
+        return $this->hasMany(Project::class, 'manager_id');
+    }
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_user');
+    }
+
+    public function assignedTasks()
+    {
+        return $this->hasMany(Task::class, 'assigned_to');
+    }
+
+    public function createdTasks()
+    {
+        return $this->hasMany(Task::class, 'created_by');
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isManager(): bool
+    {
+        return $this->role === 'manager' || $this->isAdmin();
+    }
+
+    public function isDeveloper(): bool
+    {
+        return $this->role === 'developer' || $this->isManager();
     }
 }
