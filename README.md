@@ -188,14 +188,6 @@ All endpoints are currently under version 1:
 - **Base URL**: `/api/v1/`
 - All authentication endpoints use the v1 prefix
 
-### Directory Structure
-```
-app/Http/Controllers/Api/
-└── V1/
-    ├── BaseController.php
-    └── AuthController.php
-```
-
 ### Adding New Versions
 When adding future API versions:
 
@@ -216,13 +208,6 @@ When adding future API versions:
 - `AuthService`: Authentication business logic
 - `UserService`: User management operations
 
-## Testing
-
-Run the test suite:
-```bash
-php artisan test
-```
-
 ## Development
 
 ### Generate Swagger Documentation
@@ -235,27 +220,6 @@ php artisan l5-swagger:generate
 php artisan cache:clear
 php artisan config:clear
 php artisan route:clear
-```
-
-### Testing Endpoints
-
-```bash
-# Register a new user
-curl -X POST http://127.0.0.1:8000/api/v1/register \
-  -H "Content-Type: application/json" \
-  -d '{"name":"John Doe","email":"john@example.com","password":"password123","role":"Developer"}'
-
-# Login user
-curl -X POST http://127.0.0.1:8000/api/v1/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"john@example.com","password":"password123"}'
-
-# Get user profile (Auth required)
-curl -H "Authorization: Bearer {your-token}" http://127.0.0.1:8000/api/v1/me
-
-# Logout user (Auth required)
-curl -X POST http://127.0.0.1:8000/api/v1/logout \
-  -H "Authorization: Bearer {your-token}"
 ```
 
 ## License
