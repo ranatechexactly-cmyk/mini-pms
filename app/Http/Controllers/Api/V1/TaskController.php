@@ -265,10 +265,143 @@ class TaskController extends Controller
     }
 
     /**
+     * Search and filter tasks.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * 
+     * @OA\Get(
+     *     path="/api/v1/tasks/search",
+     *     summary="Search and filter tasks with advanced options",
+     *     description="Search tasks by title/description and filter by status, priority, and deadline range. Results respect user permissions.",
+     *     tags={"Tasks"},
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         description="Search term to filter tasks by title or description (case-insensitive)",
+     *         required=false,
+     *         @OA\Schema(type="string", example="urgent")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Filter tasks by status",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *             enum={"pending", "in_progress", "completed", "blocked"},
+     *             example="in_progress"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="priority",
+     *         in="query",
+     *         description="Filter tasks by priority",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *             enum={"low", "medium", "high", "urgent"},
+     *             example="high"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="deadline_from",
+     *         in="query",
+     *         description="Filter tasks with deadline after or on this date (YYYY-MM-DD)",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date", example="2025-01-01")
+     *     ),
+     *     @OA\Parameter(
+     *         name="deadline_to",
+     *         in="query",
+     *         description="Filter tasks with deadline before or on this date (YYYY-MM-DD)",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date", example="2025-12-31")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of tasks matching the search and filter criteria",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="success"),
+     *             @OA\Property(
+     *                 property="data", 
+     *                 type="array", 
+     *                 @OA\Items(ref="#/components/schemas/Task")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     )
+     * )
+     * 
+     * @example
+     * // Search for urgent tasks due in 2025
+     * GET /api/v1/tasks/search?search=urgent&deadline_from=2025-01-01&deadline_to=2025-12-31
+     * 
+     * // Find all high priority in-progress tasks
+     * GET /api/v1/tasks/search?priority=high&status=in_progress
+     */
+    public function search(Request $request)
+    {
+        try {
+            $filters = $request->only([
+                'search',
+                'status',
+                'priority',
+                'deadline_from',
+                'deadline_to'
+            ]);
+
+            // Validate status if provided
+            if (!empty($filters['status'])) {
+                $validStatuses = ['pending', 'in_progress', 'completed', 'blocked'];
+                if (!in_array($filters['status'], $validStatuses)) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Invalid status value. Valid values are: ' . implode(', ', $validStatuses),
+                    ], 422);
+                }
+            }
+
+            $tasks = $this->taskService->searchTasks(auth()->user(), $filters);
+            
+            if ($tasks->isEmpty()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'No tasks found matching your criteria.',
+                    'data' => [],
+                    'filters' => $filters
+                ], 200);
+            }
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Tasks retrieved successfully.',
+                'data' => $tasks,
+                'filters' => $filters
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('Search controller error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An error occurred while processing your request.',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
+    }
+
+    /**
      * Update the status of the specified task.
      *
      * @param Request $request
-     * @param Task $task
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
     /**

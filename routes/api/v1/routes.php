@@ -48,5 +48,8 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         
         // Task status update route
         Route::patch('tasks/{id}/status', [TaskController::class, 'updateStatus'])->name('tasks.status.update');
+        
+        // Task search and filter route
+        Route::get('tasks/{task}', [TaskController::class, 'search'])->name('tasks.search');
     });
 });
