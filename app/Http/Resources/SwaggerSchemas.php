@@ -38,7 +38,7 @@ namespace App\Http\Resources;
  *     @OA\Property(property="assigned_to", type="integer", example=2),
  *     @OA\Property(property="status", type="string", example="pending"),
  *     @OA\Property(property="priority", type="string", example="high"),
- *     @OA\Property(property="due_date", type="string", format="date"),
+ *     @OA\Property(property="deadline", type="string", format="date", example="2025-09-10"),
  *     @OA\Property(property="created_at", type="string", format="date-time"),
  *     @OA\Property(property="updated_at", type="string", format="date-time"),
  *     @OA\Property(property="assignee", ref="#/components/schemas/User"),
@@ -56,14 +56,14 @@ namespace App\Http\Resources;
  * @OA\Schema(
  *     schema="TaskRequest",
  *     type="object",
- *     required={"title", "project_id", "assigned_to"},
+ *     required={"title", "project_id", "assigned_to", "priority", "deadline"},
  *     @OA\Property(property="title", type="string", example="New Task"),
  *     @OA\Property(property="description", type="string", example="Task description"),
  *     @OA\Property(property="project_id", type="integer", example=1),
  *     @OA\Property(property="assigned_to", type="integer", example=2),
- *     @OA\Property(property="status", type="string", example="pending"),
- *     @OA\Property(property="priority", type="string", example="high"),
- *     @OA\Property(property="due_date", type="string", format="date")
+ *     @OA\Property(property="status", type="string", enum={"pending", "in_progress", "completed"}, example="pending"),
+ *     @OA\Property(property="priority", type="string", enum={"low", "medium", "high"}, example="high"),
+ *     @OA\Property(property="deadline", type="string", format="date", example="2025-09-10")
  * )
  */
 class SwaggerSchemas

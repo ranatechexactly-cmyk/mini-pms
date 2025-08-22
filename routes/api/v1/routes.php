@@ -47,6 +47,6 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::get('projects/{project}/tasks', [TaskController::class, 'projectTasks'])->name('projects.tasks.index');
         
         // Task status update route
-        Route::patch('tasks/{task}/status', [TaskController::class, 'updateStatus'])->name('tasks.status.update');
+        Route::patch('tasks/{id}/status', [TaskController::class, 'updateStatus'])->name('tasks.status.update');
     });
 });

@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Services\TaskService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 
@@ -307,18 +308,28 @@ class TaskController extends Controller
      *     )
      * )
      */
-    public function updateStatus(Request $request, Task $task)
+    public function updateStatus(Request $request, $id)
     {
         $request->validate([
             'status' => 'required|in:pending,in_progress,completed',
         ]);
+        
+        $task = Task::findOrFail($id);
+        
+        // Check authorization
+        if (!Gate::allows('changeStatus', $task)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are not authorized to update this task status.',
+            ], 403);
+        }
         
         $task = $this->taskService->updateTaskStatus($task, $request->input('status'));
 
         return response()->json([
             'status' => 'success',
             'message' => 'Task status updated successfully.',
-            'data' => $task,
+            'data' => $task->load(['project', 'assignee', 'creator']),
         ]);
     }
 

@@ -16,12 +16,16 @@ class TaskService
      */
     public function getUserTasks(User $user)
     {
-        if ($user->isManager()) {
+        $query = Task::with(['project', 'assignee', 'creator']);
+
+        if ($user->isAdmin()) {
+            // Admins can see all tasks
+            return $query->latest()->get();
+        } elseif ($user->isManager()) {
             // Managers can see all tasks in their projects
-            return Task::whereHas('project', function ($query) use ($user) {
+            return $query->whereHas('project', function ($query) use ($user) {
                 $query->where('manager_id', $user->id);
             })
-            ->with(['project', 'assignee', 'creator'])
             ->latest()
             ->get();
         }

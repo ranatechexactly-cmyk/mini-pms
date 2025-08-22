@@ -754,13 +754,13 @@
                 ]
             }
         },
-        "/api/v1/projects/{project}/developers/{user}": {
+        "/api/v1/projects/{project}/developers/{developerId}": {
             "delete": {
                 "tags": [
                     "Projects"
                 ],
                 "summary": "Remove a developer from a project",
-                "operationId": "9a312ec188f5b13acb8edc06c3a9287c",
+                "operationId": "cb68d5483f3e4b1b31ffd2443ecdb032",
                 "parameters": [
                     {
                         "name": "project",
@@ -769,7 +769,7 @@
                         "required": true
                     },
                     {
-                        "name": "user",
+                        "name": "developerId",
                         "in": "path",
                         "description": "User ID of the developer to remove",
                         "required": true
@@ -1255,9 +1255,10 @@
                         "type": "string",
                         "example": "high"
                     },
-                    "due_date": {
+                    "deadline": {
                         "type": "string",
-                        "format": "date"
+                        "format": "date",
+                        "example": "2025-09-10"
                     },
                     "created_at": {
                         "type": "string",
@@ -1296,7 +1297,9 @@
                 "required": [
                     "title",
                     "project_id",
-                    "assigned_to"
+                    "assigned_to",
+                    "priority",
+                    "deadline"
                 ],
                 "properties": {
                     "title": {
@@ -1317,15 +1320,26 @@
                     },
                     "status": {
                         "type": "string",
+                        "enum": [
+                            "pending",
+                            "in_progress",
+                            "completed"
+                        ],
                         "example": "pending"
                     },
                     "priority": {
                         "type": "string",
+                        "enum": [
+                            "low",
+                            "medium",
+                            "high"
+                        ],
                         "example": "high"
                     },
-                    "due_date": {
+                    "deadline": {
                         "type": "string",
-                        "format": "date"
+                        "format": "date",
+                        "example": "2025-09-10"
                     }
                 },
                 "type": "object"

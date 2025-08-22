@@ -44,7 +44,12 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        // Admin/Manager can update any task in their projects
+        // Admin can update any task
+        if ($user->isAdmin()) {
+            return true;
+        }
+        
+        // Manager can update tasks in their projects
         if ($user->isManager()) {
             return $task->project->manager_id === $user->id;
         }
@@ -58,7 +63,12 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
-        // Only the project manager can delete tasks
+        // Admin can delete any task
+        if ($user->isAdmin()) {
+            return true;
+        }
+        
+        // Only the project manager can delete tasks in their projects
         return $user->isManager() && $task->project->manager_id === $user->id;
     }
 
@@ -83,7 +93,12 @@ class TaskPolicy
      */
     public function changeStatus(User $user, Task $task): bool
     {
-        // Only assigned developer or project manager can change status
+        // Admin can change status of any task
+        if ($user->isAdmin()) {
+            return true;
+        }
+        
+        // Assigned developer or project manager can change status
         return $task->assigned_to === $user->id || 
                ($user->isManager() && $task->project->manager_id === $user->id);
     }
