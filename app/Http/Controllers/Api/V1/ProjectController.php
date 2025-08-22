@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\ProjectRequest;
 use App\Models\Project;
+use App\Models\User;
 use App\Services\ProjectService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,27 +25,7 @@ class ProjectController extends Controller
     public function __construct(ProjectService $projectService)
     {
         $this->projectService = $projectService;
-        
-        // Apply policy to all methods except index and show
-        $this->middleware(function ($request, $next) {
-            if (in_array($request->route()->getActionMethod(), ['index', 'show'])) {
-                return $next($request);
-            }
-            
-            if (in_array($request->route()->getActionMethod(), ['assignDevelopers', 'removeDeveloper'])) {
-                $project = Project::findOrFail($request->route('project'));
-                if (!Gate::allows($request->route()->getActionMethod(), $project)) {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => 'You are not authorized to perform this action.',
-                        'data' => null
-                    ], Response::HTTP_FORBIDDEN);
-                }
-                return $next($request);
-            }
-            
-            return $next($request);
-        })->except(['index', 'show']);
+        $this->middleware('auth:sanctum');
     }
 
     /**
@@ -114,6 +95,8 @@ class ProjectController extends Controller
      */
     public function store(ProjectRequest $request)
     {
+        $this->authorize('create', Project::class);
+        
         $project = $this->projectService->createProject(
             array_merge($request->validated(), [
                 'developer_ids' => $request->input('developer_ids', [])
@@ -160,9 +143,29 @@ class ProjectController extends Controller
      *     )
      * )
      */
-    public function show(Project $project)
+    public function show($id)
     {
+        // Explicitly find the project by ID
+        $project = Project::find($id);
+        
+        if (!$project) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Project not found',
+                'data' => null
+            ], 404);
+        }
+        
         $this->authorize('view', $project);
+        
+        // For developers, verify they are assigned to the project
+        if (auth()->user()->isDeveloper() && !$project->developers->contains(auth()->id())) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are not authorized to view this project.',
+                'data' => null
+            ], 403);
+        }
         
         $project->load(['manager', 'developers', 'tasks.assignee']);
         
@@ -267,16 +270,48 @@ class ProjectController extends Controller
      *     )
      * )
      */
-    public function destroy(Project $project)
+    public function destroy($id)
     {
-        $this->authorize('delete', $project);
-        
-        $this->projectService->deleteProject($project);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Project deleted successfully.',
-        ]);
+        try {
+            // Find the project including trashed ones
+            $project = Project::withTrashed()->find($id);
+            
+            if (!$project) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Project not found',
+                    'data' => null
+                ], 404);
+            }
+            
+            // Check if already deleted
+            if ($project->trashed()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Project has already been deleted',
+                    'data' => null
+                ], 410);
+            }
+            
+            // Authorize the action using the ProjectPolicy
+            $this->authorize('delete', $project);
+            
+            // Delete the project
+            $project->delete();
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Project deleted successfully.',
+                'data' => null
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to delete project. ' . $e->getMessage(),
+                'data' => null
+            ], 500);
+        }
     }
 
     /**
@@ -343,12 +378,12 @@ class ProjectController extends Controller
      * Remove a developer from a project.
      *
      * @param Project $project
-     * @param User $user
+     * @param int $developerId
      * @return \Illuminate\Http\JsonResponse
      */
     /**
      * @OA\Delete(
-     *     path="/api/v1/projects/{project}/developers/{user}",
+     *     path="/api/v1/projects/{project}/developers/{developerId}",
      *     summary="Remove a developer from a project",
      *     tags={"Projects"},
      *     security={{"sanctum": {}}},
@@ -359,7 +394,7 @@ class ProjectController extends Controller
      *         description="Project ID"
      *     ),
      *     @OA\Parameter(
-     *         name="user",
+     *         name="developerId",
      *         in="path",
      *         required=true,
      *         description="User ID of the developer to remove"
@@ -382,13 +417,18 @@ class ProjectController extends Controller
      *     )
      * )
      */
-    public function removeDeveloper(Project $project, User $user)
+    public function removeDeveloper(Project $project, int $developerId)
     {
-        $this->projectService->removeDeveloper($project, $user);
+        // Authorize the action using the ProjectPolicy
+        $this->authorize('removeDeveloper', $project);
+        
+        // Pass the developer ID directly
+        $this->projectService->removeDeveloper($project, $developerId);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Developer removed from project successfully.',
+            'data' => null
         ]);
     }
 }

@@ -43,6 +43,12 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project): bool
     {
+        // Allow admin to update any project
+        if ($user->isAdmin()) {
+            return true;
+        }
+        
+        // Allow manager to update their own projects
         return $user->isManager() && $project->manager_id === $user->id;
     }
 
@@ -51,6 +57,12 @@ class ProjectPolicy
      */
     public function delete(User $user, Project $project): bool
     {
+        // Allow admin to delete any project
+        if ($user->isAdmin()) {
+            return true;
+        }
+        
+        // Allow manager to delete their own projects
         return $user->isManager() && $project->manager_id === $user->id;
     }
 
@@ -59,6 +71,12 @@ class ProjectPolicy
      */
     public function assignDevelopers(User $user, Project $project): bool
     {
+        // Allow admin to assign developers to any project
+        if ($user->isAdmin()) {
+            return true;
+        }
+        
+        // Allow manager to assign developers to their own projects
         return $user->isManager() && $project->manager_id === $user->id;
     }
 
@@ -67,6 +85,12 @@ class ProjectPolicy
      */
     public function removeDeveloper(User $user, Project $project): bool
     {
+        // Allow admin to remove developers from any project
+        if ($user->isAdmin()) {
+            return true;
+        }
+        
+        // Allow manager to remove developers from their own projects
         return $user->isManager() && $project->manager_id === $user->id;
     }
 

@@ -20,6 +20,8 @@ class AuthServiceProvider extends ServiceProvider
         Project::class => ProjectPolicy::class,
         Task::class => TaskPolicy::class,
     ];
+    
+    protected $namespace = 'App\Policies';
 
     /**
      * Register any authentication / authorization services.
