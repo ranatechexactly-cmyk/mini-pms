@@ -19,6 +19,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Project::class => ProjectPolicy::class,
         Task::class => TaskPolicy::class,
+        User::class => DashboardPolicy::class,
     ];
     
     protected $namespace = 'App\Policies';
@@ -30,19 +31,34 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        // Define a gate for admin users
+        // Define role-based gates
         Gate::define('isAdmin', function ($user) {
             return $user->isAdmin();
         });
 
-        // Define a gate for manager users
         Gate::define('isManager', function ($user) {
             return $user->isManager();
         });
 
-        // Define a gate for developer users
         Gate::define('isDeveloper', function ($user) {
             return $user->isDeveloper();
+        });
+
+        // Navigation gates
+        Gate::define('viewProjects', function ($user) {
+            return $user->isAdmin() || $user->isManager() || $user->isDeveloper();
+        });
+
+        Gate::define('viewTasks', function ($user) {
+            return $user->isAdmin() || $user->isManager() || $user->isDeveloper();
+        });
+
+        Gate::define('manageUsers', function ($user) {
+            return $user->isAdmin();
+        });
+
+        Gate::define('viewReports', function ($user) {
+            return $user->isAdmin() || $user->isManager();
         });
     }
 }

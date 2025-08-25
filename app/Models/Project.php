@@ -24,6 +24,42 @@ class Project extends Model
         'deleted_at',
     ];
 
+    /**
+     * Determine if the user can view the project.
+     */
+    public function canView(User $user)
+    {
+        return $user->isAdmin() || 
+               $user->isManager() || 
+               $this->developers->contains($user) || 
+               $this->manager_id === $user->id;
+    }
+
+    /**
+     * Determine if the user can create projects.
+     */
+    public function canCreate(User $user)
+    {
+        return $user->isAdmin() || $user->isManager();
+    }
+
+    /**
+     * Determine if the user can update the project.
+     */
+    public function canUpdate(User $user)
+    {
+        return $user->isAdmin() || 
+               ($user->isManager() && $this->manager_id === $user->id);
+    }
+
+    /**
+     * Determine if the user can delete the project.
+     */
+    public function canDelete(User $user)
+    {
+        return $user->isAdmin();
+    }
+
     public function manager()
     {
         return $this->belongsTo(User::class, 'manager_id');

@@ -1,66 +1,108 @@
-# Mini PMS API
+# Mini PMS (Project Management System)
 
-A mini Project Management System API built with Laravel 11 and Laravel Sanctum for authentication.
+A full-featured Project Management System built with Laravel 11, featuring both web interface and RESTful API with Laravel Sanctum authentication.
 
-## Features
+## 🌟 Features
 
-### User Authentication
-- User registration with role assignment (admin, manager, developer)
-- Secure login/logout with Laravel Sanctum tokens
-- User profile management
-- Role-based access control (RBAC)
+### 👥 User Authentication & Authorization
+- Multi-role system (Admin, Manager, Developer)
+- Secure authentication with session-based web interface
+- RESTful API authentication with Laravel Sanctum
+- Role-based access control (RBAC) with policies
+- User management interface for administrators
 
-### Project Management
+### 📊 Project Management
+- Intuitive dashboard with project statistics
 - Create, view, update, and delete projects
 - Assign/remove developers to/from projects
 - Track project status and progress
 - View project tasks and team members
+- Responsive design for all devices
 
-### Task Management
+### ✅ Task Management
+- Interactive task board interface
 - Create, view, update, and delete tasks
 - Assign tasks to developers
 - Update task status (pending, in_progress, completed)
 - Set task priority and due dates
+- Task filtering and search functionality
 
-### API Features
-- RESTful API design with versioning (v1)
-- Service layer pattern for business logic separation
-- Consistent JSON response format
+### 🔄 API Features (v1)
+- RESTful API design with versioning
+- Service layer pattern for clean architecture
+- Consistent JSON:API response format
 - Comprehensive request validation
-- Detailed error handling
+- Detailed error handling with proper HTTP status codes
 - Rate limiting and security headers
+- OpenAPI (Swagger) documentation
 
-## Tech Stack
+## 🛠️ Tech Stack
 
+### Backend
 - **Framework**: Laravel 11
-- **Authentication**: Laravel Sanctum
+- **Authentication**: Laravel Sanctum (API) + Session (Web)
 - **Database**: MySQL/SQLite
+- **Frontend**: Blade Templates + Tailwind CSS
+- **JavaScript**: Alpine.js for interactivity
+- **Testing**: PHPUnit, Laravel Dusk
 - **API Documentation**: L5-Swagger (OpenAPI 3.0)
 - **PHP Version**: 8.2+
 - **Package Manager**: Composer
 
-## API Documentation
+### Development Tools
+- Laravel Sail for Docker development
+- Laravel Mix for asset compilation
+- PHP_CodeSniffer for code style
+- PHPStan for static analysis
 
-Interactive API documentation is available after setup at:
+## 📚 Documentation
+
+### Web Interface
+Access the web interface at:
+```
+http://localhost:8000
+```
+
+### API Documentation
+Interactive API documentation is available at:
 ```
 http://localhost:8000/api/documentation
 ```
 
-### Authentication
+#### API Authentication
 1. Register a new user or use existing credentials
-2. Log in to get an authentication token
-3. Click "Authorize" in the Swagger UI and enter: `Bearer YOUR_AUTH_TOKEN`
+2. Log in via `/api/login` to get an authentication token
+3. Include the token in the `Authorization` header: `Bearer YOUR_AUTH_TOKEN`
 
-## Getting Started
+### Role-Based Access
+- **Admin**: Full access to all features and user management
+- **Manager**: Can manage projects and tasks, view reports
+- **Developer**: Can view assigned projects and update task status
+
+## 🚀 Getting Started
 
 ### Prerequisites
 - PHP 8.2 or higher
-- Composer
+- Composer 2.0+
+- Node.js 16+ and NPM
 - MySQL 5.7+ or SQLite
 - Git
+- (Optional) Docker and Docker Compose
 
-### Installation
+### 🛠️ Installation
 
+#### Using Docker (Recommended)
+```bash
+git clone https://github.com/yourusername/mini-pms-app.git
+cd mini-pms-app
+cp .env.example .env
+./vendor/bin/sail up -d
+./vendor/bin/sail artisan migrate --seed
+./vendor/bin/sail npm install
+./vendor/bin/sail npm run dev
+```
+
+#### Manual Installation
 1. Clone the repository:
    ```bash
    git clone https://github.com/yourusername/mini-pms-app.git
@@ -72,17 +114,23 @@ http://localhost:8000/api/documentation
    composer install
    ```
 
-3. Copy the environment file:
+3. Install NPM dependencies:
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+4. Copy the environment file:
    ```bash
    cp .env.example .env
    ```
 
-4. Generate application key:
+5. Generate application key:
    ```bash
    php artisan key:generate
    ```
 
-5. Configure your database in `.env`:
+6. Configure your database in `.env`:
    ```env
    DB_CONNECTION=mysql
    DB_HOST=127.0.0.1
@@ -92,11 +140,20 @@ http://localhost:8000/api/documentation
    DB_PASSWORD=
    ```
 
-6. Run database migrations and seeders:
+7. Run database migrations and seeders:
    ```bash
    php artisan migrate --seed
    ```
-   This will create the necessary tables and seed the database with sample data.
+   This will create the necessary tables and seed the database with sample users:
+   - Admin: admin@example.com / password
+   - Manager: manager@example.com / password
+   - Developer: developer@example.com / password
+
+8. Start the development server:
+   ```bash
+   php artisan serve
+   ```
+   Access the application at: http://localhost:8000
 
 7. Generate Swagger documentation:
    ```bash

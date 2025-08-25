@@ -13,7 +13,7 @@ class TaskPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true; // Basic access check is handled in the controller
+        return true; // All authenticated users can view tasks
     }
 
     /**
@@ -21,8 +21,13 @@ class TaskPolicy
      */
     public function view(User $user, Task $task): bool
     {
-        // Admin/Manager can view any task
-        if ($user->isManager()) {
+        // Admin can view any task
+        if ($user->isAdmin()) {
+            return true;
+        }
+        
+        // Manager can view tasks in their projects
+        if ($user->isManager() && $task->project && $task->project->manager_id === $user->id) {
             return true;
         }
         
@@ -35,8 +40,7 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
-        // Only managers and developers can create tasks
-        return $user->isDeveloper() || $user->isManager();
+        return false; // No one can create tasks (read-only)
     }
 
     /**
@@ -44,18 +48,7 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        // Admin can update any task
-        if ($user->isAdmin()) {
-            return true;
-        }
-        
-        // Manager can update tasks in their projects
-        if ($user->isManager()) {
-            return $task->project->manager_id === $user->id;
-        }
-        
-        // Developers can only update their assigned tasks
-        return $task->assigned_to === $user->id;
+        return false; // No one can update tasks (read-only)
     }
 
     /**
@@ -63,13 +56,7 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
-        // Admin can delete any task
-        if ($user->isAdmin()) {
-            return true;
-        }
-        
-        // Only the project manager can delete tasks in their projects
-        return $user->isManager() && $task->project->manager_id === $user->id;
+        return false; // No one can delete tasks (read-only)
     }
 
     /**

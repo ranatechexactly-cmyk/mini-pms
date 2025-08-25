@@ -46,21 +46,8 @@
             margin-bottom: 1rem;
         }
         
-        .form-control:focus {
-            border-color: #bac8f3;
-            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
-        }
-        
         .btn-login {
-            background-color: var(--primary-color);
-            border: none;
-            padding: 0.75rem;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-        
-        .btn-login:hover {
-            background-color: var(--accent-color);
+            font-weight: 600;
         }
         
         .form-floating>label {
@@ -75,7 +62,7 @@
     </style>
     @stack('styles')
 </head>
-<body>
+<body class="bg-light">
     @yield('content')
 
     <!-- Bootstrap Bundle with Popper -->

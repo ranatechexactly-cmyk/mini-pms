@@ -23,12 +23,16 @@ class Task extends Model
         'created_by',
     ];
 
-    /**
-     * The event map for the model.
-     *
-     * @var array
-     */
-    // Remove the $dispatchesEvents property since we're handling events in booted()
+    protected $casts = [
+        'deadline' => 'datetime',
+    ];
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'deadline',
+    ];
 
     /**
      * The "booted" method of the model.
@@ -61,38 +65,78 @@ class Task extends Model
             }
         });
     }
-
-    protected $casts = [
-        'deadline' => 'datetime',
-    ];
-
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'deleted_at',
-        'deadline',
-    ];
-
+    
+    /**
+     * Get the project that owns the task.
+     */
     public function project()
     {
         return $this->belongsTo(Project::class);
     }
-
-    public function assignee()
+    
+    /**
+     * Get the user that the task is assigned to.
+     */
+    public function assignedTo()
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
-
-    public function creator()
+    
+    /**
+     * Alias for assignedTo
+     */
+    public function assignee()
+    {
+        return $this->assignedTo();
+    }
+    
+    /**
+     * Get the user who created the task.
+     */
+    public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+    
+    /**
+     * Alias for createdBy
+     */
+    public function creator()
+    {
+        return $this->createdBy();
+    }
+    
+    /**
+     * Determine if the user can view the task.
+     */
+    public function canView($user)
+    {
+        if ($user->isAdmin()) {
+            return true;
+        }
+        
+        if ($user->isManager() && $this->project && $this->project->manager_id === $user->id) {
+            return true;
+        }
+        
+        if ($this->assigned_to === $user->id) {
+            return true;
+        }
+        
+        return false;
+    }
 
+    /**
+     * Scope a query to only include tasks assigned to a specific user.
+     */
     public function scopeAssignedTo($query, $userId)
     {
         return $query->where('assigned_to', $userId);
     }
 
+    /**
+     * Scope a query to only include tasks in a specific project.
+     */
     public function scopeInProject($query, $projectId)
     {
         return $query->where('project_id', $projectId);
